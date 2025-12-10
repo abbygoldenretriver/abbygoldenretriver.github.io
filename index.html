@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ColorBday</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f5f5f5;
+      text-align: center;
+    }
+
+    header {
+      padding: 20px;
+      background: white;
+      position: sticky;
+      top: 0;
+      border-bottom: 1px solid #ddd;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .selectors {
+      margin-top: 10px;
+    }
+
+    select {
+      padding: 6px;
+      font-size: 16px;
+      margin: 0 5px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 12px;
+      padding: 20px;
+    }
+
+    .color-box {
+      padding: 20px;
+      border-radius: 8px;
+      background: white;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+      font-size: 14px;
+    }
+
+    .swatch {
+      width: 100%;
+      height: 60px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>ColorBday</h1>
+    <div class="selectors">
+      <select id="month">
+        <option value="">月份</option>
+        <script>
+          for (let m = 1; m <= 12; m++) {
+            document.write(`<option value="${m}">${m} 月</option>`);
+          }
+        </script>
+      </select>
+
+      <select id="day">
+        <option value="">日期</option>
+        <script>
+          for (let d = 1; d <= 31; d++) {
+            document.write(`<option value="${d}">${d} 日</option>`);
+          }
+        </script>
+      </select>
+    </div>
+  </header>
+
+  <div class="grid" id="colorGrid"></div>
+
+  <script>
+    function generateColor(index) {
+      const r = (index * 37) % 255;
+      const g = (index * 59) % 255;
+      const b = (index * 83) % 255;
+      return `rgb(${r}, ${g}, ${b})`;
+    }
+
+    function dayOfYear(month, day) {
+      const daysInMonth = [31,28,31,30,31,30,31,31,30,31,30,31];
+      let total = 0;
+      for (let i = 0; i < month - 1; i++) total += daysInMonth[i];
+      return total + day;
+    }
+
+    function renderAllColors() {
+      const grid = document.getElementById("colorGrid");
+      grid.innerHTML = "";
+      for (let i = 1; i <= 365; i++) {
+        const color = generateColor(i);
+        grid.innerHTML += `
+          <div class='color-box'>
+            <div class='swatch' style='background:${color}'></div>
+            <div>${color}</div>
+          </div>
+        `;
+      }
+    }
+
+    function renderBirthdayColor() {
+      const m = document.getElementById("month").value;
+      const d = document.getElementById("day").value;
+      if (!m || !d) return;
+
+      const index = dayOfYear(parseInt(m), parseInt(d));
+      const color = generateColor(index);
+      const grid = document.getElementById("colorGrid");
+      grid.innerHTML = `
+        <div class='color-box'>
+          <div class='swatch' style='background:${color}'></div>
+          <div>${color}</div>
+        </div>
+      `;
+    }
+
+    document.getElementById("month").addEventListener("change", renderBirthdayColor);
+    document.getElementById("day").addEventListener("change", renderBirthdayColor);
+
+    renderAllColors();
+  </script>
+</body>
+</html>
