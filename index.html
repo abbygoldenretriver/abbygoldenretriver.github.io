@@ -116,16 +116,7 @@
   <div class="grid" id="colorGrid"></div>
 
   <script>
-    function function generateColor(index) {
-      const r = (index * 37) % 255;
-      const g = (index * 59) % 255;
-      const b = (index * 83) % 255;
-      return `rgb(${r}, ${g}, ${b})`;
-    }
-
-    function formatFHI(index) {
-      return `FHI ${index.toString().padStart(4, '0')}`;
-    }(index) {
+    function generateColor(index) {
       const r = (index * 37) % 255;
       const g = (index * 59) % 255;
       const b = (index * 83) % 255;
@@ -145,7 +136,7 @@
           <div class='swatch' style='background:${color}'></div>
           <div class='info'>
             <div class='label'>COLORBDAY</div>
-            <div class='code'>20-${String(i).padStart(4,'0')} TPM</div>
+            <div class='code'>FHI ${String(i).padStart(4,'0')} TPM</div>
           </div>
         </div>`;
     }
