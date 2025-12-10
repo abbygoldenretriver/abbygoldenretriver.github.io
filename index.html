@@ -116,7 +116,16 @@
   <div class="grid" id="colorGrid"></div>
 
   <script>
-    function generateColor(index) {
+    function function generateColor(index) {
+      const r = (index * 37) % 255;
+      const g = (index * 59) % 255;
+      const b = (index * 83) % 255;
+      return `rgb(${r}, ${g}, ${b})`;
+    }
+
+    function formatFHI(index) {
+      return `FHI ${index.toString().padStart(4, '0')}`;
+    }(index) {
       const r = (index * 37) % 255;
       const g = (index * 59) % 255;
       const b = (index * 83) % 255;
