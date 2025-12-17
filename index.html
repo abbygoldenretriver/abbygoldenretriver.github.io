@@ -1,250 +1,249 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>ColorBday</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ColorBday</title>
 
-<style>
-body {
-  margin: 0;
-  font-family: "Helvetica Neue", Arial, sans-serif;
-  background: #FFF7D6;
-  color: #000;
-}
+  <style>
+    body {
+      margin: 0;
+      font-family: "Helvetica Neue", Arial, sans-serif;
+      background: #FFF7D6;
+      color: #000;
+    }
 
-/* ===== Header ===== */
-header {
-  position: sticky;
-  top: 0;
-  background: #FFF7D6;
-  padding: 20px 28px;
-  border-bottom: 2px solid #000;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  z-index: 10;
-}
+    /* ===== Header ===== */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: #FFF7D6;
+      border-bottom: 2px solid #000;
+      padding: 20px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
 
-h1 {
-  margin: 0;
-  font-size: 28px;
-  font-weight: 900;
-  padding: 6px 10px;
-  border: 2px solid #000;
-  cursor: pointer;
-  width: fit-content;
-}
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      cursor: pointer;
+    }
 
-.selectors select {
-  padding: 8px 10px;
-  font-size: 16px;
-  border: 2px solid #000;
-  background: #fff;
-  margin-right: 10px;
-}
+    #logo {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 900;
+      border: 2px solid #000;
+      padding: 6px 10px;
+    }
 
-/* ===== Grid ===== */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 32px;
-  padding: 48px 64px;
-}
+    .tagline {
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      opacity: 0.55;
+      padding-top: 4px;
+      white-space: nowrap;
+    }
 
-/* ===== Color Card ===== */
-.color-box {
-  border: 2px solid #000;
-  background: #fff;
-  cursor: pointer;
-  transition: transform .2s ease, box-shadow .2s ease;
-}
+    .selectors select {
+      padding: 8px 10px;
+      font-size: 15px;
+      border: 2px solid #000;
+      background: #fff;
+      margin-right: 10px;
+    }
 
-.color-box:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 10px 18px rgba(0,0,0,.2);
-}
+    /* ===== Grid ===== */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 28px;
+      padding: 40px 60px;
+      justify-items: center;
+    }
 
-.swatch {
-  height: 180px;
-  border-bottom: 2px solid #000;
-}
+    .color-box {
+      width: 180px;
+      border: 2px solid #000;
+      background: #fff;
+      cursor: pointer;
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
 
-/* ===== Info ===== */
-.info {
-  padding: 16px;
-}
+    .color-box:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 10px 18px rgba(0,0,0,.2);
+    }
 
-.label {
-  font-weight: 900;
-  font-size: 18px;
-}
+    .swatch {
+      height: 150px;
+      border-bottom: 2px solid #000;
+    }
 
-.code {
-  font-size: 14px;
-  opacity: .6;
-  margin-bottom: 12px;
-}
+    .info {
+      padding: 12px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
 
-/* ===== Extra Info (single page) ===== */
-.extra {
-  border-top: 1px solid #000;
-  margin-top: 12px;
-  padding-top: 12px;
-  font-size: 13px;
-  line-height: 1.6;
-}
+    .label {
+      font-weight: 900;
+      letter-spacing: 0.06em;
+    }
 
-.extra-title {
-  text-transform: uppercase;
-  letter-spacing: .08em;
-  font-size: 12px;
-  opacity: .6;
-}
+    .code {
+      opacity: .6;
+      margin-top: 4px;
+    }
 
-.share {
-  margin-top: 10px;
-  font-size: 12px;
-  opacity: .6;
-  cursor: pointer;
-  text-decoration: underline;
-}
+    .detail {
+      margin-top: 14px;
+      font-size: 13px;
+      opacity: .75;
+    }
 
-/* ===== Mobile ===== */
-@media (max-width: 600px) {
-  .grid {
-    padding: 24px;
-  }
-}
-</style>
+    .action {
+      margin-top: 14px;
+      font-size: 12px;
+      opacity: .6;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+  </style>
 </head>
 
 <body>
 
 <header>
-  <h1 id="logo">ColorBday</h1>
+  <div class="brand" id="homeBtn">
+    <h1 id="logo">ColorBday</h1>
+    <span class="tagline">Your birthday, your color</span>
+  </div>
+
   <div class="selectors">
-    <select id="month"><option value="">月份</option></select>
-    <select id="day"><option value="">日期</option></select>
+    <select id="month">
+      <option value="">Month</option>
+    </select>
+    <select id="day">
+      <option value="">Day</option>
+    </select>
   </div>
 </header>
 
 <div class="grid" id="colorGrid"></div>
 
 <script>
-/* ===== Date Utils ===== */
-function isLeapYear(y){return (y%4===0&&y%100!==0)||y%400===0;}
-function isValidDate(m,d,y){
-  const days=[31,isLeapYear(y)?29:28,31,30,31,30,31,31,30,31,30,31];
-  return d<=days[m-1];
-}
+  const grid = document.getElementById("colorGrid");
+  const monthSel = document.getElementById("month");
+  const daySel = document.getElementById("day");
 
-/* ===== Color ===== */
-function generateColor(seed){
-  const h=(seed*47)%360;
-  const s=22+(seed%6);
-  const l=64+(seed%6);
-  return `hsl(${h},${s}%,${l}%)`;
-}
+  /* ===== Date utils ===== */
+  function isLeapYear(y) {
+    return (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0;
+  }
 
-/* ===== Mood ===== */
-function colorMood(seed){
-  const moods=[
-    "Calm · Soft · Balanced",
-    "Warm · Gentle · Quiet",
-    "Muted · Stable · Cozy",
-    "Soft · Thoughtful · Calm",
-    "Gentle · Natural · Still"
-  ];
-  return moods[seed % moods.length];
-}
+  function daysInMonth(month, year) {
+    return [31, isLeapYear(year) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month - 1];
+  }
 
-/* ===== Card ===== */
-function createCard(code,color,extra=""){
-  return `
-  <div class="color-box" data-code="${code}">
-    <div class="swatch" style="background:${color}"></div>
-    <div class="info">
-      <div class="label">COLORBDAY</div>
-      <div class="code">${code} TPG</div>
-      ${extra}
-    </div>
-  </div>`;
-}
+  /* ===== Color generator (Morandi) ===== */
+  function generateColor(seed) {
+    const hue = (seed * 47) % 360;
+    const saturation = 22 + seed % 10;
+    const lightness = 62 + seed % 8;
+    return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+  }
 
-/* ===== DOM ===== */
-const grid=document.getElementById("colorGrid");
-const month=document.getElementById("month");
-const day=document.getElementById("day");
-const logo=document.getElementById("logo");
+  /* ===== Card ===== */
+  function createCard(mm, dd) {
+    const seed = mm * 100 + dd;
+    const color = generateColor(seed);
 
-/* ===== Select Init ===== */
-for(let m=1;m<=12;m++) month.innerHTML+=`<option value="${m}">${m} 月</option>`;
-for(let d=1;d<=31;d++) day.innerHTML+=`<option value="${d}">${d} 日</option>`;
+    return `
+      <div class="color-box" onclick="goToDate(${mm},${dd})">
+        <div class="swatch" style="background:${color}"></div>
+        <div class="info">
+          <div class="label">COLORBDAY</div>
+          <div class="code">${String(mm).padStart(2,"0")}${String(dd).padStart(2,"0")} TPG</div>
 
-/* ===== Render All ===== */
-function renderAll(){
-  grid.innerHTML="";
-  const y=new Date().getFullYear();
-  for(let m=1;m<=12;m++){
-    for(let d=1;d<=31;d++){
-      if(!isValidDate(m,d,y))continue;
-      const code=`${String(m).padStart(2,"0")}${String(d).padStart(2,"0")}`;
-      const seed=m*40+d;
-      grid.innerHTML+=createCard(code,generateColor(seed));
+          <div class="detail">
+            ${new Date(2024, mm-1, dd).toLocaleString("en",{month:"long",day:"numeric"})}<br>
+            Calm · Soft · Balanced
+          </div>
+
+          <div class="action" onclick="copyLink(event,'${String(mm).padStart(2,"0")}${String(dd).padStart(2,"0")}')">
+            Copy link
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  /* ===== Render ===== */
+  function renderAll() {
+    grid.innerHTML = "";
+    for (let m=1; m<=12; m++) {
+      for (let d=1; d<=daysInMonth(m, new Date().getFullYear()); d++) {
+        grid.innerHTML += createCard(m,d);
+      }
     }
   }
-}
 
-/* ===== Render Single ===== */
-function renderSingle(code,push=true){
-  const m=parseInt(code.slice(0,2));
-  const d=parseInt(code.slice(2));
-  const seed=m*40+d;
-  const dayOfYear=Math.floor((Date.UTC(2024,m-1,d)-Date.UTC(2024,0,0))/86400000);
-  const extra=`
-    <div class="extra">
-      <div class="extra-title">${new Date(2024,m-1,d).toLocaleString("en",{month:"long",day:"numeric"})}</div>
-      Day ${dayOfYear} of the year<br><br>
-      <span class="extra-title">Color mood</span><br>
-      ${colorMood(seed)}<br>
-      <div class="share" onclick="copyLink('${code}')">Copy link</div>
-    </div>`;
-  grid.innerHTML=createCard(code,generateColor(seed),extra);
-  if(push)history.pushState({code},"",`?date=${code}`);
-}
-
-/* ===== Events ===== */
-month.onchange=day.onchange=()=>{
-  if(month.value&&day.value){
-    renderSingle(`${String(month.value).padStart(2,"0")}${String(day.value).padStart(2,"0")}`);
+  function renderSingle(mm,dd) {
+    grid.innerHTML = createCard(mm,dd);
   }
-};
 
-grid.onclick=e=>{
-  const c=e.target.closest(".color-box");
-  if(c)renderSingle(c.dataset.code);
-};
+  /* ===== Navigation ===== */
+  function goToDate(m,d){
+    history.pushState({}, "", `?date=${String(m).padStart(2,"0")}${String(d).padStart(2,"0")}`);
+    monthSel.value = m;
+    daySel.value = d;
+    renderSingle(m,d);
+  }
 
-logo.onclick=()=>{
-  month.value="";day.value="";
-  history.pushState({},"",location.pathname);
-  renderAll();
-};
+  document.getElementById("homeBtn").onclick = () => {
+    history.pushState({}, "", location.pathname);
+    monthSel.value = "";
+    daySel.value = "";
+    renderAll();
+  };
 
-window.onpopstate=e=>{
-  e.state&&e.state.code?renderSingle(e.state.code,false):renderAll();
-};
+  function copyLink(e,code){
+    e.stopPropagation();
+    const url = `${location.origin}${location.pathname}?date=${code}`;
+    navigator.clipboard.writeText(url);
+    alert("Link copied!");
+  }
 
-/* ===== Copy ===== */
-function copyLink(code){
-  navigator.clipboard.writeText(location.origin+location.pathname+"?date="+code);
-  alert("Link copied!");
-}
+  /* ===== Init ===== */
+  for(let m=1;m<=12;m++) monthSel.innerHTML += `<option value="${m}">${m}</option>`;
 
-/* ===== Init ===== */
-const p=new URLSearchParams(location.search).get("date");
-p?renderSingle(p,false):renderAll();
+  monthSel.onchange = () => {
+    daySel.innerHTML = `<option value="">Day</option>`;
+    if(!monthSel.value) return;
+    for(let d=1; d<=daysInMonth(monthSel.value,new Date().getFullYear()); d++){
+      daySel.innerHTML += `<option value="${d}">${d}</option>`;
+    }
+  };
+
+  daySel.onchange = () => {
+    if(monthSel.value && daySel.value){
+      goToDate(parseInt(monthSel.value), parseInt(daySel.value));
+    }
+  };
+
+  const params = new URLSearchParams(location.search);
+  if(params.get("date")){
+    const mm = parseInt(params.get("date").slice(0,2));
+    const dd = parseInt(params.get("date").slice(2,4));
+    goToDate(mm,dd);
+  } else {
+    renderAll();
+  }
 </script>
 
 </body>
