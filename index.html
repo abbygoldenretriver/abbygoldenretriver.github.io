@@ -1,248 +1,251 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ColorBday</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ColorBday</title>
 
-  <style>
-    body {
-      font-family: 'Helvetica Neue', Arial, sans-serif;
-      margin: 0;
-      background: #FFF7D6;
-    }
+<style>
+body {
+  margin: 0;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  background: #FFF7D6;
+  color: #000;
+}
 
-    header {
-      position: sticky;
-      top: 0;
-      background: #FFF7D6;
-      padding: 20px 28px;
-      border-bottom: 2px solid #000;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 12px;
-      z-index: 10;
-    }
+/* ===== Header ===== */
+header {
+  position: sticky;
+  top: 0;
+  background: #FFF7D6;
+  padding: 20px 28px;
+  border-bottom: 2px solid #000;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 10;
+}
 
-    h1 {
-      margin: 0;
-      font-size: 28px;
-      font-weight: 900;
-      padding: 6px 10px;
-      border: 2px solid #000;
-      cursor: pointer;
-      user-select: none;
-    }
+h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 900;
+  padding: 6px 10px;
+  border: 2px solid #000;
+  cursor: pointer;
+  width: fit-content;
+}
 
-    .selectors select {
-      padding: 8px 10px;
-      font-size: 16px;
-      border: 2px solid #000;
-      background: white;
-      border-radius: 6px;
-      margin-right: 10px;
-    }
+.selectors select {
+  padding: 8px 10px;
+  font-size: 16px;
+  border: 2px solid #000;
+  background: #fff;
+  margin-right: 10px;
+}
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 28px;
-      padding: 40px 60px;
-      justify-items: center;
-    }
+/* ===== Grid ===== */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 32px;
+  padding: 48px 64px;
+}
 
-    .color-box {
-      width: 180px;
-      border: 2px solid #000;
-      background: white;
-      display: flex;
-      flex-direction: column;
-      transition: transform .2s ease, box-shadow .2s ease;
-      cursor: pointer;
-    }
+/* ===== Color Card ===== */
+.color-box {
+  border: 2px solid #000;
+  background: #fff;
+  cursor: pointer;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
 
-    .color-box:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 8px 16px rgba(0,0,0,.2);
-    }
+.color-box:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 18px rgba(0,0,0,.2);
+}
 
-    .swatch {
-      height: 150px;
-      border-bottom: 2px solid #000;
-    }
+.swatch {
+  height: 180px;
+  border-bottom: 2px solid #000;
+}
 
-    .info {
-      padding: 12px;
-    }
+/* ===== Info ===== */
+.info {
+  padding: 16px;
+}
 
-    .label {
-      font-weight: 900;
-      font-size: 18px;
-    }
+.label {
+  font-weight: 900;
+  font-size: 18px;
+}
 
-    .code {
-      font-size: 14px;
-      opacity: .7;
-      margin-top: 4px;
-    }
-  </style>
+.code {
+  font-size: 14px;
+  opacity: .6;
+  margin-bottom: 12px;
+}
+
+/* ===== Extra Info (single page) ===== */
+.extra {
+  border-top: 1px solid #000;
+  margin-top: 12px;
+  padding-top: 12px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.extra-title {
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  font-size: 12px;
+  opacity: .6;
+}
+
+.share {
+  margin-top: 10px;
+  font-size: 12px;
+  opacity: .6;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* ===== Mobile ===== */
+@media (max-width: 600px) {
+  .grid {
+    padding: 24px;
+  }
+}
+</style>
 </head>
 
 <body>
 
 <header>
   <h1 id="logo">ColorBday</h1>
-
   <div class="selectors">
-    <select id="month">
-      <option value="">月份</option>
-    </select>
-
-    <select id="day">
-      <option value="">日期</option>
-    </select>
+    <select id="month"><option value="">月份</option></select>
+    <select id="day"><option value="">日期</option></select>
   </div>
 </header>
 
 <div class="grid" id="colorGrid"></div>
 
 <script>
-/* ========= 基本日期工具 ========= */
-function isLeapYear(year) {
-  return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+/* ===== Date Utils ===== */
+function isLeapYear(y){return (y%4===0&&y%100!==0)||y%400===0;}
+function isValidDate(m,d,y){
+  const days=[31,isLeapYear(y)?29:28,31,30,31,30,31,31,30,31,30,31];
+  return d<=days[m-1];
 }
 
-function isValidDate(m, d, year) {
-  const daysInMonth = [
-    31,
-    isLeapYear(year) ? 29 : 28,
-    31, 30, 31, 30,
-    31, 31, 30, 31, 30, 31
+/* ===== Color ===== */
+function generateColor(seed){
+  const h=(seed*47)%360;
+  const s=22+(seed%6);
+  const l=64+(seed%6);
+  return `hsl(${h},${s}%,${l}%)`;
+}
+
+/* ===== Mood ===== */
+function colorMood(seed){
+  const moods=[
+    "Calm · Soft · Balanced",
+    "Warm · Gentle · Quiet",
+    "Muted · Stable · Cozy",
+    "Soft · Thoughtful · Calm",
+    "Gentle · Natural · Still"
   ];
-  return d <= daysInMonth[m - 1];
+  return moods[seed % moods.length];
 }
 
-/* ========= 顏色生成（莫蘭迪、差異更清楚） ========= */
-function generateColor(seed) {
-  const hue = (seed * 47) % 360;        // 色相分散
-  const saturation = 22 + (seed % 6);  // 低飽和（莫蘭迪）
-  const lightness = 64 + (seed % 6);   // 偏亮、柔和
-  return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
-}
-
-/* ========= 建立色卡 ========= */
-function createCard(code, color) {
+/* ===== Card ===== */
+function createCard(code,color,extra=""){
   return `
-    <div class="color-box" data-code="${code}">
-      <div class="swatch" style="background:${color}"></div>
-      <div class="info">
-        <div class="label">COLORBDAY</div>
-        <div class="code">${code} TPG</div>
-      </div>
+  <div class="color-box" data-code="${code}">
+    <div class="swatch" style="background:${color}"></div>
+    <div class="info">
+      <div class="label">COLORBDAY</div>
+      <div class="code">${code} TPG</div>
+      ${extra}
     </div>
-  `;
+  </div>`;
 }
 
-/* ========= DOM ========= */
-const monthSelect = document.getElementById("month");
-const daySelect   = document.getElementById("day");
-const grid        = document.getElementById("colorGrid");
-const logo        = document.getElementById("logo");
+/* ===== DOM ===== */
+const grid=document.getElementById("colorGrid");
+const month=document.getElementById("month");
+const day=document.getElementById("day");
+const logo=document.getElementById("logo");
 
-/* ========= 初始化下拉 ========= */
-for (let m = 1; m <= 12; m++) {
-  const opt = document.createElement("option");
-  opt.value = m;
-  opt.textContent = `${m} 月`;
-  monthSelect.appendChild(opt);
-}
+/* ===== Select Init ===== */
+for(let m=1;m<=12;m++) month.innerHTML+=`<option value="${m}">${m} 月</option>`;
+for(let d=1;d<=31;d++) day.innerHTML+=`<option value="${d}">${d} 日</option>`;
 
-for (let d = 1; d <= 31; d++) {
-  const opt = document.createElement("option");
-  opt.value = d;
-  opt.textContent = `${d} 日`;
-  daySelect.appendChild(opt);
-}
-
-/* ========= 總覽頁（所有日期） ========= */
-function renderAllColors() {
-  grid.innerHTML = "";
-  const year = new Date().getFullYear();
-
-  for (let m = 1; m <= 12; m++) {
-    for (let d = 1; d <= 31; d++) {
-      if (!isValidDate(m, d, year)) continue;
-      const code = `${String(m).padStart(2, "0")}${String(d).padStart(2, "0")}`;
-      const seed = m * 40 + d;
-      const color = generateColor(seed);
-      grid.innerHTML += createCard(code, color);
+/* ===== Render All ===== */
+function renderAll(){
+  grid.innerHTML="";
+  const y=new Date().getFullYear();
+  for(let m=1;m<=12;m++){
+    for(let d=1;d<=31;d++){
+      if(!isValidDate(m,d,y))continue;
+      const code=`${String(m).padStart(2,"0")}${String(d).padStart(2,"0")}`;
+      const seed=m*40+d;
+      grid.innerHTML+=createCard(code,generateColor(seed));
     }
   }
 }
 
-/* ========= 單一生日頁 ========= */
-function renderSingle(code, push = true) {
-  const m = parseInt(code.slice(0, 2));
-  const d = parseInt(code.slice(2, 4));
-  const seed = m * 40 + d;
-  const color = generateColor(seed);
-
-  grid.innerHTML = createCard(code, color);
-
-  if (push) {
-    history.pushState({ code }, "", `?date=${code}`);
-  }
+/* ===== Render Single ===== */
+function renderSingle(code,push=true){
+  const m=parseInt(code.slice(0,2));
+  const d=parseInt(code.slice(2));
+  const seed=m*40+d;
+  const dayOfYear=Math.floor((Date.UTC(2024,m-1,d)-Date.UTC(2024,0,0))/86400000);
+  const extra=`
+    <div class="extra">
+      <div class="extra-title">${new Date(2024,m-1,d).toLocaleString("en",{month:"long",day:"numeric"})}</div>
+      Day ${dayOfYear} of the year<br><br>
+      <span class="extra-title">Color mood</span><br>
+      ${colorMood(seed)}<br>
+      <div class="share" onclick="copyLink('${code}')">Copy link</div>
+    </div>`;
+  grid.innerHTML=createCard(code,generateColor(seed),extra);
+  if(push)history.pushState({code},"",`?date=${code}`);
 }
 
-/* ========= 下拉選單 ========= */
-function handleSelect() {
-  if (monthSelect.value && daySelect.value) {
-    const code =
-      `${String(monthSelect.value).padStart(2, "0")}` +
-      `${String(daySelect.value).padStart(2, "0")}`;
-    renderSingle(code);
+/* ===== Events ===== */
+month.onchange=day.onchange=()=>{
+  if(month.value&&day.value){
+    renderSingle(`${String(month.value).padStart(2,"0")}${String(day.value).padStart(2,"0")}`);
   }
+};
+
+grid.onclick=e=>{
+  const c=e.target.closest(".color-box");
+  if(c)renderSingle(c.dataset.code);
+};
+
+logo.onclick=()=>{
+  month.value="";day.value="";
+  history.pushState({},"",location.pathname);
+  renderAll();
+};
+
+window.onpopstate=e=>{
+  e.state&&e.state.code?renderSingle(e.state.code,false):renderAll();
+};
+
+/* ===== Copy ===== */
+function copyLink(code){
+  navigator.clipboard.writeText(location.origin+location.pathname+"?date="+code);
+  alert("Link copied!");
 }
 
-monthSelect.addEventListener("change", handleSelect);
-daySelect.addEventListener("change", handleSelect);
-
-/* ========= 點擊色卡 ========= */
-grid.addEventListener("click", (e) => {
-  const card = e.target.closest(".color-box");
-  if (!card) return;
-  renderSingle(card.dataset.code);
-});
-
-/* ========= 點 Logo 回首頁 ========= */
-logo.addEventListener("click", () => {
-  monthSelect.value = "";
-  daySelect.value = "";
-  history.pushState({}, "", location.pathname);
-  renderAllColors();
-});
-
-/* ========= 瀏覽器上一頁 / 下一頁 ========= */
-window.addEventListener("popstate", (e) => {
-  if (e.state && e.state.code) {
-    renderSingle(e.state.code, false);
-  } else {
-    renderAllColors();
-  }
-});
-
-/* ========= 初始載入（支援 ?date=MMDD） ========= */
-const params = new URLSearchParams(window.location.search);
-const dateParam = params.get("date");
-
-if (dateParam && /^\d{4}$/.test(dateParam)) {
-  renderSingle(dateParam, false);
-} else {
-  renderAllColors();
-}
+/* ===== Init ===== */
+const p=new URLSearchParams(location.search).get("date");
+p?renderSingle(p,false):renderAll();
 </script>
-
 
 </body>
 </html>
