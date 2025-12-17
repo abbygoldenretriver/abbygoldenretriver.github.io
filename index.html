@@ -4,25 +4,24 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ColorBday</title>
-
   <style>
     body {
       font-family: 'Helvetica Neue', Arial, sans-serif;
       margin: 0;
+      padding: 0;
       background: #FFF7D6;
     }
 
     header {
+      padding: 20px 28px;
+      background: #FFF7D6;
       position: sticky;
       top: 0;
-      background: #FFF7D6;
-      padding: 20px 28px;
       border-bottom: 2px solid #000;
       display: flex;
       flex-direction: column;
       align-items: flex-start;
       gap: 12px;
-      z-index: 10;
     }
 
     h1 {
@@ -34,7 +33,7 @@
     }
 
     .selectors select {
-      padding: 8px 10px;
+      padding: 8px;
       font-size: 16px;
       border: 2px solid #000;
       background: white;
@@ -54,23 +53,27 @@
       width: 180px;
       border: 2px solid #000;
       background: white;
+      border-radius: 4px;
       display: flex;
       flex-direction: column;
-      transition: transform .2s ease, box-shadow .2s ease;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
     .color-box:hover {
       transform: translateY(-6px);
-      box-shadow: 0 8px 16px rgba(0,0,0,.2);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
     }
 
     .swatch {
+      width: 100%;
       height: 150px;
       border-bottom: 2px solid #000;
     }
 
     .info {
       padding: 12px;
+      font-size: 14px;
+      line-height: 1.4;
     }
 
     .label {
@@ -80,119 +83,99 @@
 
     .code {
       font-size: 14px;
-      opacity: .7;
+      opacity: 0.7;
       margin-top: 4px;
     }
   </style>
 </head>
-
 <body>
+  <header>
+    <h1>ColorBday</h1>
 
-<header>
-  <h1>ColorBday</h1>
+    <div class="selectors">
+      <select id="month">
+        <option value="">月份</option>
+        <script>
+          for (let m = 1; m <= 12; m++) {
+            document.write(`<option value="${m}">${m} 月</option>`);
+          }
+        </script>
+      </select>
 
-  <div class="selectors">
-    <select id="month">
-      <option value="">月份</option>
-    </select>
+      <select id="day">
+        <option value="">日期</option>
+        <script>
+          for (let d = 1; d <= 31; d++) {
+            document.write(`<option value="${d}">${d} 日</option>`);
+          }
+        </script>
+      </select>
+    </div>
+  </header>
 
-    <select id="day">
-      <option value="">日期</option>
-    </select>
-  </div>
-</header>
+  <div class="grid" id="colorGrid"></div>
 
-<div class="grid" id="colorGrid"></div>
-
-<script>
-  /* ===== 基本工具 ===== */
-  function isLeapYear(year) {
-    return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+  <script>
+    function generateColor(seed) {
+    // Morandi style: low saturation, soft lightness
+    const hue = seed * 37 % 360;          // 色相仍然分散
+    const saturation = 25;                // 低飽和（莫蘭迪關鍵）
+    const lightness = 70;                 // 偏亮、柔和
+    return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
   }
 
-  function isValidDate(m, d, year) {
-    const days = [31, isLeapYear(year) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-    return d <= days[m - 1];
-  }
-
-  function generateColor(seed) {
-    const r = (seed * 37) % 255;
-    const g = (seed * 59) % 255;
-    const b = (seed * 83) % 255;
-    return `rgb(${r}, ${g}, ${b})`;
-  }
-
-  function createCard(code, color) {
-    return `
-      <div class="color-box">
-        <div class="swatch" style="background:${color}"></div>
-        <div class="info">
-          <div class="label">COLORBDAY</div>
-          <div class="code">${code} TPG</div>
-        </div>
-      </div>
-    `;
-  }
-
-  /* ===== 下拉選單 ===== */
-  const monthSelect = document.getElementById("month");
-  const daySelect = document.getElementById("day");
-
-  for (let m = 1; m <= 12; m++) {
-    const opt = document.createElement("option");
-    opt.value = m;
-    opt.textContent = `${m} 月`;
-    monthSelect.appendChild(opt);
-  }
-
-  for (let d = 1; d <= 31; d++) {
-    const opt = document.createElement("option");
-    opt.value = d;
-    opt.textContent = `${d} 日`;
-    daySelect.appendChild(opt);
-  }
-
-  /* ===== 渲染全部顏色 ===== */
-  function renderAllColors() {
-    const grid = document.getElementById("colorGrid");
-    grid.innerHTML = "";
-    const year = new Date().getFullYear();
-
-    for (let m = 1; m <= 12; m++) {
-      for (let d = 1; d <= 31; d++) {
-        if (!isValidDate(m, d, year)) continue;
-
-        const code = `${String(m).padStart(2,"0")}${String(d).padStart(2,"0")}`;
-        const seed = m * 31 + d;
-        const color = generateColor(seed);
-
-        grid.innerHTML += createCard(code, color);
-      }
+    function isLeapYear(year) {
+      return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
     }
-  }
 
-  /* ===== 生日查詢 ===== */
-  function renderBirthdayColor() {
-    const m = parseInt(monthSelect.value);
-    const d = parseInt(daySelect.value);
-    if (!m || !d) return;
+    function isValidDate(month, day, year = new Date().getFullYear()) {
+      const daysInMonth = [31, isLeapYear(year) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+      return day <= daysInMonth[month - 1];
+    }
 
-    const year = new Date().getFullYear();
-    if (!isValidDate(m, d, year)) return;
+    function createCard(i, color) {
+      return `
+        <div class='color-box'>
+          <div class='swatch' style='background:${color}'></div>
+          <div class='info'>
+            <div class='label'>COLORBDAY</div>
+            <div class='code'>${String(i).padStart(4,'0')} TPG</div>
+          </div>
+        </div>`;
+    }
 
-    const code = `${String(m).padStart(2,"0")}${String(d).padStart(2,"0")}`;
-    const seed = m * 31 + d;
-    const color = generateColor(seed);
+    function renderAllColors() {
+      const grid = document.getElementById("colorGrid");
+      grid.innerHTML = "";
+      const year = new Date().getFullYear();
+      for (let m = 1; m <= 12; m++) {
+        for (let d = 1; d <= 31; d++) {
+          if (!isValidDate(m, d, year)) continue;
+          const index = `${String(m).padStart(2,'0')}${String(d).padStart(2,'0')}`;
+          const colorSeed = m * 31 + d;
+          const color = generateColor(colorSeed);
+          grid.innerHTML += createCard(index, color);
+        }
+      }
+    }    }
 
-    document.getElementById("colorGrid").innerHTML =
-      createCard(code, color);
-  }
+    function renderBirthdayColor() {
+      const m = parseInt(document.getElementById("month").value);
+      const d = parseInt(document.getElementById("day").value);
+      if (!m || !d) return;
+      const year = new Date().getFullYear();
+      if (!isValidDate(m, d, year)) return;
+      const index = `${String(m).padStart(2,'0')}${String(d).padStart(2,'0')}`;
+      const colorSeed = m * 31 + d;
+      const color = generateColor(colorSeed);
+      const grid = document.getElementById("colorGrid");
+      grid.innerHTML = createCard(index, color);
+    }
+    document.getElementById("month").addEventListener("change", renderBirthdayColor);
+    document.getElementById("day").addEventListener("change", renderBirthdayColor);
 
-  monthSelect.addEventListener("change", renderBirthdayColor);
-  daySelect.addEventListener("change", renderBirthdayColor);
-
-  renderAllColors();
-</script>
-
+    renderAllColors();
+  </script>
 </body>
 </html>
+
