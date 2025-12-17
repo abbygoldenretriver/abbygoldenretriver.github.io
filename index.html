@@ -108,103 +108,141 @@
 <div class="grid" id="colorGrid"></div>
 
 <script>
-  function isLeapYear(year) {
-    return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
-  }
+/* ========= 基本日期工具 ========= */
+function isLeapYear(year) {
+  return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+}
 
-  function isValidDate(m, d, year) {
-    const days = [31, isLeapYear(year) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-    return d <= days[m - 1];
-  }
+function isValidDate(m, d, year) {
+  const daysInMonth = [
+    31,
+    isLeapYear(year) ? 29 : 28,
+    31, 30, 31, 30,
+    31, 31, 30, 31, 30, 31
+  ];
+  return d <= daysInMonth[m - 1];
+}
 
-  function generateColor(seed) {
-    const hue = (seed * 47) % 360;
-    const saturation = 22 + (seed % 10);
-    const lightness = 62 + (seed % 8);
-    return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
-  }
+/* ========= 顏色生成（莫蘭迪、差異更清楚） ========= */
+function generateColor(seed) {
+  const hue = (seed * 47) % 360;        // 色相分散
+  const saturation = 22 + (seed % 6);  // 低飽和（莫蘭迪）
+  const lightness = 64 + (seed % 6);   // 偏亮、柔和
+  return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+}
 
-  function createCard(code, color) {
-    return `
-      <div class="color-box" data-code="${code}">
-        <div class="swatch" style="background:${color}"></div>
-        <div class="info">
-          <div class="label">COLORBDAY</div>
-          <div class="code">${code} TPG</div>
-        </div>
+/* ========= 建立色卡 ========= */
+function createCard(code, color) {
+  return `
+    <div class="color-box" data-code="${code}">
+      <div class="swatch" style="background:${color}"></div>
+      <div class="info">
+        <div class="label">COLORBDAY</div>
+        <div class="code">${code} TPG</div>
       </div>
-    `;
-  }
+    </div>
+  `;
+}
 
-  const monthSelect = document.getElementById("month");
-  const daySelect = document.getElementById("day");
-  const grid = document.getElementById("colorGrid");
+/* ========= DOM ========= */
+const monthSelect = document.getElementById("month");
+const daySelect   = document.getElementById("day");
+const grid        = document.getElementById("colorGrid");
+const logo        = document.getElementById("logo");
+
+/* ========= 初始化下拉 ========= */
+for (let m = 1; m <= 12; m++) {
+  const opt = document.createElement("option");
+  opt.value = m;
+  opt.textContent = `${m} 月`;
+  monthSelect.appendChild(opt);
+}
+
+for (let d = 1; d <= 31; d++) {
+  const opt = document.createElement("option");
+  opt.value = d;
+  opt.textContent = `${d} 日`;
+  daySelect.appendChild(opt);
+}
+
+/* ========= 總覽頁（所有日期） ========= */
+function renderAllColors() {
+  grid.innerHTML = "";
+  const year = new Date().getFullYear();
 
   for (let m = 1; m <= 12; m++) {
-    const opt = document.createElement("option");
-    opt.value = m;
-    opt.textContent = `${m} 月`;
-    monthSelect.appendChild(opt);
-  }
-
-  for (let d = 1; d <= 31; d++) {
-    const opt = document.createElement("option");
-    opt.value = d;
-    opt.textContent = `${d} 日`;
-    daySelect.appendChild(opt);
-  }
-
-  function renderAllColors() {
-    grid.innerHTML = "";
-    const year = new Date().getFullYear();
-
-    for (let m = 1; m <= 12; m++) {
-      for (let d = 1; d <= 31; d++) {
-        if (!isValidDate(m, d, year)) continue;
-        const code = `${String(m).padStart(2,'0')}${String(d).padStart(2,'0')}`;
-        const seed = m * 31 + d;
-        const color = generateColor(seed);
-        grid.innerHTML += createCard(code, color);
-      }
+    for (let d = 1; d <= 31; d++) {
+      if (!isValidDate(m, d, year)) continue;
+      const code = `${String(m).padStart(2, "0")}${String(d).padStart(2, "0")}`;
+      const seed = m * 40 + d;
+      const color = generateColor(seed);
+      grid.innerHTML += createCard(code, color);
     }
   }
+}
 
-  function renderSingle(code) {
-    const m = parseInt(code.slice(0,2));
-    const d = parseInt(code.slice(2,4));
-    const seed = m * 31 + d;
-    const color = generateColor(seed);
-    grid.innerHTML = createCard(code, color);
+/* ========= 單一生日頁 ========= */
+function renderSingle(code, push = true) {
+  const m = parseInt(code.slice(0, 2));
+  const d = parseInt(code.slice(2, 4));
+  const seed = m * 40 + d;
+  const color = generateColor(seed);
+
+  grid.innerHTML = createCard(code, color);
+
+  if (push) {
+    history.pushState({ code }, "", `?date=${code}`);
   }
+}
 
-  monthSelect.addEventListener("change", () => {
-    if (monthSelect.value && daySelect.value) {
-      const code = `${String(monthSelect.value).padStart(2,'0')}${String(daySelect.value).padStart(2,'0')}`;
-      renderSingle(code);
-    }
-  });
+/* ========= 下拉選單 ========= */
+function handleSelect() {
+  if (monthSelect.value && daySelect.value) {
+    const code =
+      `${String(monthSelect.value).padStart(2, "0")}` +
+      `${String(daySelect.value).padStart(2, "0")}`;
+    renderSingle(code);
+  }
+}
 
-  daySelect.addEventListener("change", () => {
-    if (monthSelect.value && daySelect.value) {
-      const code = `${String(monthSelect.value).padStart(2,'0')}${String(daySelect.value).padStart(2,'0')}`;
-      renderSingle(code);
-    }
-  });
+monthSelect.addEventListener("change", handleSelect);
+daySelect.addEventListener("change", handleSelect);
 
-  grid.addEventListener("click", (e) => {
-    const card = e.target.closest('.color-box');
-    if (!card) return;
-    renderSingle(card.dataset.code);
-  });
+/* ========= 點擊色卡 ========= */
+grid.addEventListener("click", (e) => {
+  const card = e.target.closest(".color-box");
+  if (!card) return;
+  renderSingle(card.dataset.code);
+});
 
-  document.getElementById("logo").addEventListener("click", () => {
-    monthSelect.value = "";
-    daySelect.value = "";
-    renderAllColors();
-  });
-
+/* ========= 點 Logo 回首頁 ========= */
+logo.addEventListener("click", () => {
+  monthSelect.value = "";
+  daySelect.value = "";
+  history.pushState({}, "", location.pathname);
   renderAllColors();
+});
+
+/* ========= 瀏覽器上一頁 / 下一頁 ========= */
+window.addEventListener("popstate", (e) => {
+  if (e.state && e.state.code) {
+    renderSingle(e.state.code, false);
+  } else {
+    renderAllColors();
+  }
+});
+
+/* ========= 初始載入（支援 ?date=MMDD） ========= */
+const params = new URLSearchParams(window.location.search);
+const dateParam = params.get("date");
+
+if (dateParam && /^\d{4}$/.test(dateParam)) {
+  renderSingle(dateParam, false);
+} else {
+  renderAllColors();
+}
 </script>
+
 
 </body>
 </html>
