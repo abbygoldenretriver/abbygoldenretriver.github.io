@@ -123,11 +123,13 @@
       return `rgb(${r}, ${g}, ${b})`;
     }
 
-    function dayOfYear(month, day) {
-      const daysInMonth = [31,28,31,30,31,30,31,31,30,31,30,31];
-      let total = 0;
-      for (let i = 0; i < month - 1; i++) total += daysInMonth[i];
-      return total + day;
+    function isLeapYear(year) {
+      return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+    }
+
+    function isValidDate(month, day, year = new Date().getFullYear()) {
+      const daysInMonth = [31, isLeapYear(year) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+      return day <= daysInMonth[month - 1];
     }
 
     function createCard(i, color) {
@@ -136,7 +138,7 @@
           <div class='swatch' style='background:${color}'></div>
           <div class='info'>
             <div class='label'>COLORBDAY</div>
-            <div class='code'>FHI ${String(i).padStart(4,'0')} TPM</div>
+            <div class='code'>${String(i).padStart(4,'0')} TPG</div>
           </div>
         </div>`;
     }
@@ -144,23 +146,30 @@
     function renderAllColors() {
       const grid = document.getElementById("colorGrid");
       grid.innerHTML = "";
-      for (let i = 1; i <= 365; i++) {
-        const color = generateColor(i);
-        grid.innerHTML += createCard(i, color);
+      const year = new Date().getFullYear();
+      for (let m = 1; m <= 12; m++) {
+        for (let d = 1; d <= 31; d++) {
+          if (!isValidDate(m, d, year)) continue;
+          const index = `${String(m).padStart(2,'0')}${String(d).padStart(2,'0')}`;
+          const colorSeed = m * 31 + d;
+          const color = generateColor(colorSeed);
+          grid.innerHTML += createCard(index, color);
+        }
       }
-    }
+    }    }
 
     function renderBirthdayColor() {
-      const m = document.getElementById("month").value;
-      const d = document.getElementById("day").value;
+      const m = parseInt(document.getElementById("month").value);
+      const d = parseInt(document.getElementById("day").value);
       if (!m || !d) return;
-
-      const index = dayOfYear(parseInt(m), parseInt(d));
-      const color = generateColor(index);
+      const year = new Date().getFullYear();
+      if (!isValidDate(m, d, year)) return;
+      const index = `${String(m).padStart(2,'0')}${String(d).padStart(2,'0')}`;
+      const colorSeed = m * 31 + d;
+      const color = generateColor(colorSeed);
       const grid = document.getElementById("colorGrid");
       grid.innerHTML = createCard(index, color);
     }
-
     document.getElementById("month").addEventListener("change", renderBirthdayColor);
     document.getElementById("day").addEventListener("change", renderBirthdayColor);
 
