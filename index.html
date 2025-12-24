@@ -11,8 +11,10 @@
       font-family: 'Helvetica Neue', Arial, sans-serif;
       margin: 0;
       background: #FFF7D6;
+      color: #000;
     }
 
+    /* ===== Header ===== */
     header {
       position: sticky;
       top: 0;
@@ -21,8 +23,7 @@
       border-bottom: 2px solid #000;
       display: flex;
       flex-direction: column;
-      align-items: flex-start;
-      gap: 12px;
+      gap: 14px;
       z-index: 10;
     }
 
@@ -30,9 +31,10 @@
       margin: 0;
       font-size: 28px;
       font-weight: 900;
-      padding: 6px 10px;
+      padding: 6px 12px;
       border: 2px solid #000;
       cursor: pointer;
+      width: fit-content;
       user-select: none;
     }
 
@@ -41,15 +43,29 @@
       font-size: 16px;
       border: 2px solid #000;
       background: white;
-      border-radius: 6px;
       margin-right: 10px;
     }
 
+    /* ===== Layout ===== */
+    .container {
+      display: flex;
+      min-height: calc(100vh - 120px);
+    }
+
+    /* 垂直結構線 */
+    .divider {
+      width: 2px;
+      background: #000;
+      margin: 40px 0;
+    }
+
+    /* ===== Grid (all colors) ===== */
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
       gap: 28px;
       padding: 40px 60px;
+      width: 100%;
       justify-items: center;
     }
 
@@ -57,10 +73,8 @@
       width: 180px;
       border: 2px solid #000;
       background: white;
-      display: flex;
-      flex-direction: column;
-      transition: transform .2s ease, box-shadow .2s ease;
       cursor: pointer;
+      transition: transform .2s ease, box-shadow .2s ease;
     }
 
     .color-box:hover {
@@ -79,13 +93,62 @@
 
     .label {
       font-weight: 900;
-      font-size: 18px;
+      font-size: 16px;
     }
 
     .code {
-      font-size: 14px;
+      font-size: 13px;
       opacity: .7;
       margin-top: 4px;
+    }
+
+    /* ===== Single view ===== */
+    .single-view {
+      display: flex;
+      gap: 60px;
+      padding: 60px;
+      width: 100%;
+      align-items: center;
+    }
+
+    .single-card {
+      width: 320px;
+      border: 2px solid #000;
+      background: white;
+    }
+
+    .single-swatch {
+      height: 260px;
+      border-bottom: 2px solid #000;
+    }
+
+    .single-info {
+      padding: 18px;
+    }
+
+    .single-info .label {
+      font-size: 18px;
+    }
+
+    /* ===== Side info ===== */
+    .side-info {
+      max-width: 360px;
+    }
+
+    .side-title {
+      font-weight: 900;
+      margin-bottom: 6px;
+    }
+
+    .side-block {
+      margin-bottom: 18px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .small {
+      font-size: 12px;
+      opacity: .6;
     }
   </style>
 </head>
@@ -94,19 +157,17 @@
 
 <header>
   <h1 id="logo">ColorBday</h1>
-
   <div class="selectors">
     <select id="month">
-      <option value="">月份</option>
+      <option value="">Month</option>
     </select>
-
     <select id="day">
-      <option value="">日期</option>
+      <option value="">Day</option>
     </select>
   </div>
 </header>
 
-<div class="grid" id="colorGrid"></div>
+<div id="main"></div>
 
 <script>
   function isLeapYear(year) {
@@ -119,110 +180,119 @@
   }
 
   function generateColor(seed) {
-    const hue = (seed * 47) % 360;
-    const saturation = 22 + (seed % 10);
-    const lightness = 62 + (seed % 8);
-    return { h: hue, s: saturation, l: lightness, css: `hsl(${hue}, ${saturation}%, ${lightness}%)` };
+    const h = (seed * 47) % 360;
+    const s = 22 + (seed % 10);
+    const l = 62 + (seed % 8);
+    return { h, s, l, css: `hsl(${h}, ${s}%, ${l}%)` };
   }
 
   function deriveKeywords(h, s, l) {
-    const keywords = [];
-    if (l >= 66) keywords.push("Soft"); else keywords.push("Deep");
-    if (s >= 28) keywords.push("Bold"); else keywords.push("Calm");
-    if (h >= 30 && h < 90) keywords.push("Warm");
-    else if (h >= 90 && h < 170) keywords.push("Balanced");
-    else if (h >= 170 && h < 250) keywords.push("Reflective");
-    else keywords.push("Quiet");
-    return keywords.join(" · ");
+    const k = [];
+    k.push(l > 65 ? "Soft" : "Deep");
+    k.push(s > 28 ? "Bold" : "Calm");
+    if (h < 60) k.push("Quiet");
+    else if (h < 160) k.push("Balanced");
+    else k.push("Reflective");
+    return k.join(" · ");
   }
 
-  function createCard(code, colorObj) {
-    const keywords = deriveKeywords(colorObj.h, colorObj.s, colorObj.l);
-    return `
-      <div class="color-box" data-code="${code}">
-        <div class="swatch" style="background:${colorObj.css}"></div>
-        <div class="info">
-          <div class="label">COLORBDAY</div>
-          <div class="code">${code} TPG</div>
-          <div class="code">${keywords}</div>
-        </div>
-      </div>
-    `;
-  }
-
+  const main = document.getElementById("main");
   const monthSelect = document.getElementById("month");
   const daySelect = document.getElementById("day");
-  const grid = document.getElementById("colorGrid");
 
   for (let m = 1; m <= 12; m++) {
-    const opt = document.createElement("option");
-    opt.value = m;
-    opt.textContent = `${m} 月`;
-    monthSelect.appendChild(opt);
+    monthSelect.innerHTML += `<option value="${m}">${m}</option>`;
   }
-
   for (let d = 1; d <= 31; d++) {
-    const opt = document.createElement("option");
-    opt.value = d;
-    opt.textContent = `${d} 日`;
-    daySelect.appendChild(opt);
+    daySelect.innerHTML += `<option value="${d}">${d}</option>`;
   }
 
-  function renderAllColors() {
-    grid.innerHTML = "";
+  function renderAll() {
+    main.innerHTML = `<div class="grid" id="grid"></div>`;
+    const grid = document.getElementById("grid");
     const year = new Date().getFullYear();
 
     for (let m = 1; m <= 12; m++) {
       for (let d = 1; d <= 31; d++) {
         if (!isValidDate(m, d, year)) continue;
         const code = `${String(m).padStart(2,'0')}${String(d).padStart(2,'0')}`;
-        const seed = m * 31 + d;
-        const color = generateColor(seed);
-        grid.innerHTML += createCard(code, color);
+        const color = generateColor(m * 31 + d);
+        grid.innerHTML += `
+          <div class="color-box" data-code="${code}">
+            <div class="swatch" style="background:${color.css}"></div>
+            <div class="info">
+              <div class="label">COLORBDAY</div>
+              <div class="code">${code} TPG</div>
+            </div>
+          </div>`;
       }
     }
+
+    grid.onclick = e => {
+      const box = e.target.closest('.color-box');
+      if (box) renderSingle(box.dataset.code);
+    };
   }
 
   function renderSingle(code) {
-    const m = parseInt(code.slice(0,2));
-    const d = parseInt(code.slice(2,4));
-
-    // 同步下拉選單
+    const m = +code.slice(0,2);
+    const d = +code.slice(2,4);
     monthSelect.value = m;
     daySelect.value = d;
 
-    const seed = m * 31 + d;
-    const color = generateColor(seed);
-    grid.innerHTML = createCard(code, color);
+    const color = generateColor(m * 31 + d);
+    const keywords = deriveKeywords(color.h, color.s, color.l);
+
+    main.innerHTML = `
+      <div class="container">
+        <div class="single-view">
+          <div class="single-card">
+            <div class="single-swatch" style="background:${color.css}"></div>
+            <div class="single-info">
+              <div class="label">COLORBDAY</div>
+              <div class="code">${code} TPG</div>
+              <div class="small">${keywords}</div>
+            </div>
+          </div>
+
+          <div class="side-info">
+            <div class="side-block">
+              <div class="side-title">Day ${parseInt(code)} / 365</div>
+              ${m} / ${d}
+            </div>
+
+            <div class="side-block">
+              <div class="side-title">Mood</div>
+              ${keywords}
+            </div>
+
+            <div class="side-block">
+              <div class="side-title">Suggested Use</div>
+              UI Background<br>Editorial Accent<br>Stationery
+            </div>
+
+            <div class="small">ColorBday Collection</div>
+          </div>
+        </div>
+        <div class="divider"></div>
+      </div>`;
   }
 
-  monthSelect.addEventListener("change", () => {
+  monthSelect.onchange = daySelect.onchange = () => {
     if (monthSelect.value && daySelect.value) {
-      const code = `${String(monthSelect.value).padStart(2,'0')}${String(daySelect.value).padStart(2,'0')}`;
-      renderSingle(code);
+      renderSingle(
+        `${String(monthSelect.value).padStart(2,'0')}${String(daySelect.value).padStart(2,'0')}`
+      );
     }
-  });
+  };
 
-  daySelect.addEventListener("change", () => {
-    if (monthSelect.value && daySelect.value) {
-      const code = `${String(monthSelect.value).padStart(2,'0')}${String(daySelect.value).padStart(2,'0')}`;
-      renderSingle(code);
-    }
-  });
-
-  grid.addEventListener("click", (e) => {
-    const card = e.target.closest('.color-box');
-    if (!card) return;
-    renderSingle(card.dataset.code);
-  });
-
-  document.getElementById("logo").addEventListener("click", () => {
+  document.getElementById("logo").onclick = () => {
     monthSelect.value = "";
     daySelect.value = "";
-    renderAllColors();
-  });
+    renderAll();
+  };
 
-  renderAllColors();
+  renderAll();
 </script>
 
 </body>
