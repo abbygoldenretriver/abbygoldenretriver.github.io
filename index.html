@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ColorBday</title>
-  <link rel="icon" href="icon.JPG">
 
   <style>
     body {
@@ -186,6 +185,11 @@
   function renderSingle(code) {
     const m = parseInt(code.slice(0,2));
     const d = parseInt(code.slice(2,4));
+
+    // 同步下拉選單
+    monthSelect.value = m;
+    daySelect.value = d;
+
     const seed = m * 31 + d;
     const color = generateColor(seed);
     grid.innerHTML = createCard(code, color);
